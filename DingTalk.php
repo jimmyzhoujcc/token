@@ -166,54 +166,11 @@ class DingTalk
     public  function PCinit($agentId='', $jsApiList='')
     {   
         $agentId = $agentId ==''?$this->config['agentid']:$agentId;
-        $return ='<script src="https://g.alicdn.com/dingding/dingtalk-pc-api/2.7.0/index.js"></script>';
-        $return .='<script>';
-        $return .= 'DingTalkPC.config(';
-        $return .= $this->jsApiAuth();
-        $return .= ');';
-        
-        $return .='var a ="";
-        DingTalkPC.ready(function() {
-            // DingTalkPC.runtime.permission.requestAuthCode({
-            //         corpId: "'.$this->config["corpid"].'",
-            //         onSuccess: function(result) {
-            //             a ="sdfds";
-            //         },
-            //         onFail : function(err) {
-            //              a ="sdfds";
-            //         }
-                    
-            //     });
-
-         
-
-    DingTalkPC.runtime.permission.requestAuthCode({                         //获取code码值  
-        corpId : "'.$this->config["corpid"].'",  
-        onSuccess : function(info) {  
-
-            DingTalkPC.device.notification.alert({
-            message: info.code,
-            title: info.code,
-            buttonName: "收到",
-            onSuccess : function() {
-                /*回调*/
-            },
-            onFail : function(err) {}
-            }); 
-            
-       
-        },  
-        onFail : function(err) {  
-            alert(JSON.stringify(err));  
-        }  
-    });  
-
-
-        });</script>
-                    ';
-
+        $apiJs = 'https://g.alicdn.com/dingding/dingtalk-pc-api/2.7.0/index.js';
+        $apiConfig = $this->jsApiAuth();
         return array(
-            'init'   => $return,
+            'apiJs' => $apiJs,
+            'apiConfig' => $apiConfig,
             'corpid' => $this->config['corpid'],
         );
     }
