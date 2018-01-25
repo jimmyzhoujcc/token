@@ -1,5 +1,4 @@
 <?php
-namespace app\index\controller;
 class DingTalk
 {
     /**
@@ -172,7 +171,47 @@ class DingTalk
         $return .= 'DingTalkPC.config(';
         $return .= $this->jsApiAuth();
         $return .= ');';
-        $return .="</script>";
+        
+        $return .='var a ="";
+        DingTalkPC.ready(function() {
+            // DingTalkPC.runtime.permission.requestAuthCode({
+            //         corpId: "'.$this->config["corpid"].'",
+            //         onSuccess: function(result) {
+            //             a ="sdfds";
+            //         },
+            //         onFail : function(err) {
+            //              a ="sdfds";
+            //         }
+                    
+            //     });
+
+         
+
+    DingTalkPC.runtime.permission.requestAuthCode({                         //获取code码值  
+        corpId : "'.$this->config["corpid"].'",  
+        onSuccess : function(info) {  
+
+            DingTalkPC.device.notification.alert({
+            message: info.code,
+            title: info.code,
+            buttonName: "收到",
+            onSuccess : function() {
+                /*回调*/
+            },
+            onFail : function(err) {}
+            }); 
+            
+       
+        },  
+        onFail : function(err) {  
+            alert(JSON.stringify(err));  
+        }  
+    });  
+
+
+        });</script>
+                    ';
+
         return array(
             'init'   => $return,
             'corpid' => $this->config['corpid'],
@@ -304,7 +343,13 @@ class DingTalk
             return false;
         }
     }
+    /**
+     * [getuserid 获取用户id]
+     * @return [type] [userid]
+     */
+    public function getuserid(){
 
+    }
     /**
      * 通过CODE换取用户身份
      * @param  string $code requestAuthCode接口中获取的CODE
