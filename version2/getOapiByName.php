@@ -1,15 +1,9 @@
 <?php
-require_once(__DIR__ . "/config.php");
-require_once(__DIR__ . "/util/Log.php");
-require_once(__DIR__ . "/util/Cache.php");
 require_once(__DIR__ . "/api/Auth.php");
 require_once(__DIR__ . "/api/User.php");
-require_once(__DIR__ . "/api/Message.php");
 
 $auth = new Auth();
 $user = new User();
-$message = new Message();
-
 $event = $_REQUEST["event"];
 switch($event){
     case '':
@@ -19,7 +13,6 @@ switch($event){
         $accessToken = $auth->getAccessToken();
         $code = $_POST["code"];
         $userInfo = $user->getUserInfo($accessToken, $code);
-        Log::i("[USERINFO-getuserid]".json_encode($userInfo));
         echo json_encode($userInfo, true);
         break;
 
@@ -27,7 +20,6 @@ switch($event){
         $accessToken = $auth->getAccessToken();
         $userid = $_POST["userid"];
         $userInfo = $user->get($accessToken, $userid);
-        Log::i("[get_userinfo]".json_encode($userInfo));
         echo json_encode($userInfo, true);
         break;
     case 'jsapi-oauth':
