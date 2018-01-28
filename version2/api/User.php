@@ -1,5 +1,5 @@
 <?php
-require_once(__DIR__ . "/../util/Http.php");
+require_once("Http.php");
 
 class User
 {

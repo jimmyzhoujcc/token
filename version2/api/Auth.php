@@ -1,7 +1,7 @@
 <?php
-require_once(__DIR__ . "/../util/Http.php");
-require_once(__DIR__ . "/../util/Cache.php");
-require_once(__DIR__ . "/../config.php");
+require("Http.php");
+require_once("Cache.php");
+require_once("config.php");
 
 class Auth
 {

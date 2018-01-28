@@ -1,6 +1,6 @@
 <?php
-require_once(__DIR__ . "/api/Auth.php");
-require_once(__DIR__ . "/api/User.php");
+require_once("api/Auth.php");
+require_once("api/User.php");
 
 $auth = new Auth();
 $user = new User();

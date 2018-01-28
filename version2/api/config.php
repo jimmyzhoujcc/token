@@ -1,5 +1,5 @@
 <?php
-define('DIR_ROOT', dirname(__FILE__).'/');
+// define('DIR_ROOT', dirname(__FILE__).'/');
 define("OAPI_HOST", "https://oapi.dingtalk.com");
 
 define("CORPID", "ding4b485200f87d6b1735c2f4657eb6378f");
