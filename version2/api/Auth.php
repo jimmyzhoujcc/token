@@ -1,15 +1,14 @@
 <?php
 require("Http.php");
-require_once("Cache.php");
 require_once("config.php");
 
 class Auth
 {
     private $http;
-    private $cache;
+    private $accessToken;
+    private $jsticket;
     public function __construct() {
         $this->http = new Http();
-        $this->cache = new Cache();
     }
 
     public function getAccessToken()
@@ -17,12 +16,12 @@ class Auth
         /**
          * 缓存accessToken。accessToken有效期为两小时，需要在失效前请求新的accessToken（注意：以下代码没有在失效前刷新缓存的accessToken）。
          */
-        $accessToken = $this->cache->getCorpAccessToken('corp_access_token');
+        $accessToken = $this->accessToken;
         if (!$accessToken)
         {
             $response = $this->http->get('/gettoken', array('corpid' => CORPID, 'corpsecret' => SECRET));
             $accessToken = $response->access_token;
-            $this->cache->setCorpAccessToken($accessToken);
+            $this->accessToken  = $accessToken;
         }
         return $accessToken;
     }
@@ -32,12 +31,12 @@ class Auth
       */
     public function getTicket($accessToken)
     {
-        $jsticket = $this->cache->getJsTicket('js_ticket');
+        $jsticket  = $this->jsticket;
         if (!$jsticket)
         {
             $response = $this->http->get('/get_jsapi_ticket', array('type' => 'jsapi', 'access_token' => $accessToken));
             $jsticket = $response->ticket;
-            $this->cache->setJsTicket($jsticket);
+            $this->jsticket = $jsticket;
         }
         return $jsticket;
     }
