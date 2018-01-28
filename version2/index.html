@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+        <title>钉钉语音demo</title>
+        <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js" charset="utf-8"></script>
+        <script src="https://g.alicdn.com/dingding/open-develop/1.0.0/dingtalk.js" charset="utf-8"></script>
+        <style>
+            body,div,h1,p{
+                margin: 0px;
+                padding: 0px;
+            }
+            body{
+                font-size: 14px;
+                color: #333;
+                background-color: #eee;
+            }
+        </style>
+        <link rel="stylesheet" href="./public/stylesheets/app.css">
+    </head>
+    <body>
+
+        <script>
+
+            (function () {
+                function showInfo(msg) {
+                    dd.device.notification.confirm({
+                        message: JSON.stringify(msg),
+                        title: "提示信息",
+                        buttonLabels: ['确定', '取消'],
+                        onSuccess : function(result) {
+
+                        },
+                        onFail : function(err) {
+
+                        }
+                    });
+                }
+
+                var OPENAPIHOST = 'http://' + location.host;
+                var proper = {};
+                var _userId = '';
+                var _userInfo = {};
+
+
+                Object.defineProperty(proper, 'userId', {
+                    enumerable: true,
+                    get: function () {
+                        return _userId;
+                    },
+                    set: function (newValue) {
+                        _userId = newValue;
+                        getUserInfo(proper.userId);
+                    }
+                });
+                Object.defineProperty(proper, 'userInfo', {
+                    enumerable: true,
+                    get: function () {
+                        return _userInfo;
+                    },
+                    set: function (newValue) {
+                        _userInfo = newValue;
+                    }
+                });
+
+
+                function getUserId(corpId) {
+                    authCode(corpId).then(function (result) {
+                        var code = result.code;
+                        var getUserIdRequest = {
+                            url: OPENAPIHOST + '/getOapiByName.php?event=getuserid',
+                            type: 'POST',
+                            data: {code: code},
+                            dataType: 'json',
+                            success: function (response) {
+                                showInfo(response);
+                                if (response.errcode === 0) {
+                                    proper.userId = response.userid;
+                                } else {
+                                }
+                            },
+                            error: function (err) {
+                                // showInfo(err);
+                            }
+                        };
+                        $.ajax(getUserIdRequest);
+                    }).catch(function (error) {
+                        // showInfo(error);
+                    });
+                }
+
+                function authCode(corpId) {
+                    return new Promise(function (resolve, reject) {
+                        dd.ready(function () {
+                            dd.runtime.permission.requestAuthCode({
+                                corpId: corpId,
+                                onSuccess: function (result) {
+                                    showInfo(result);
+                                    resolve(result);
+                                },
+                                onFail: function (err) {
+                                    // showInfo(err);
+                                    reject(err);
+                                }
+                            });
+                        });
+                    });
+                }
+
+                function getUserInfo(userid) {
+                    var getUserInfoRequest = {
+                        url: OPENAPIHOST + '/getOapiByName.php?event=get_userinfo&userid=' + userid,
+                        type: 'POST',
+                        data: {userid: userid},
+                        dataType: 'json',
+                        success: function (response) {
+                            if (response.errcode === 0) {
+                                proper.userInfo = response;
+                                showInfo(proper); 
+                            } else {
+                                // showInfo(response);
+                            }
+                        },
+                        error: function (err) {
+                            // showInfo(err);
+                        }
+                    };
+                    $.ajax(getUserInfoRequest);
+                }
+
+
+
+                $(function () {
+                    var originalUrl = location.href;
+
+                    var jsApiList = [
+                        'runtime.info',
+                        'biz.contact.choose',
+                        'device.notification.confirm',
+                        'device.notification.alert',
+                        'device.notification.prompt',
+                        'biz.ding.post',
+                        'device.audio.download',
+                        'device.audio.play',
+                        'device.audio.pause',
+                        'device.audio.resume',
+                        'device.audio.stop',
+                        'device.audio.onPlayEnd',
+                    ];
+                    dd.error(function (err) {
+                        // showInfo(err);
+                    });
+                    var getOapiByNameUrl = OPENAPIHOST + '/getOapiByName.php?event=jsapi-oauth&href=' + encodeURIComponent(location.href);
+                    var signRequest = {
+                        url: getOapiByNameUrl,
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function (response) {
+                            // showInfo(response);
+                            if (response.errcode === 0) {
+                                const config = {
+                                    agentId: response.agentId || '',
+                                    corpId: response.corpId || '',
+                                    timeStamp: response.timeStamp || '',
+                                    nonceStr: response.nonceStr || '',
+                                    signature: response.signature || '',
+                                    jsApiList: jsApiList || []
+                                };
+                                dd.config(config);
+                                var corpId = response.corpId;
+                                getUserId(corpId);
+                             
+                            } else {
+                                // showInfo(response);
+                            }
+                        },
+                        error: function () {
+
+                        }
+                    };
+                    $.ajax(signRequest); 
+
+                });
+            })();
+        </script>
+    </body>
+</html>
